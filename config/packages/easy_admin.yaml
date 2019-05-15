@@ -1,0 +1,42 @@
+easy_admin:
+    site_name: CMS
+    entities:
+        Article:
+            class: App\Entity\Article
+            label: Articles
+            form:
+                fields:
+                    - title
+                    - content
+                    -
+                        property: comments
+                        type: collection
+                        type_options:
+                            entry_type: App\Form\CommentFormType
+                            allow_delete: true
+                            allow_add: true
+                            by_reference: false
+            list:
+                fields:
+                    - title
+                    - comments
+            search:
+                fields:
+                    - title
+                    - comments
+        Comment:
+            class: App\Entity\Comment
+            label: Comments
+            list:
+                fields:
+                    - name
+                    - email
+                    - article
+            search:
+                fields:
+                    - name
+                    - email
+                    - article
+    list:
+        title: 'List of %%entity_label%%'
+        actions: ['show']

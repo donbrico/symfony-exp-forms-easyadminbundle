@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Articles{% endblock %}
+
+{% block body %}
+
+    <h1>{{ title }}</h1>
+    {{ content|raw }}
+
+    <h2>Leave a comment</h2>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button type="submit" class="btn btn-success">Comment</button>
+    {{ form_end(form) }}
+
+    <div class="comments">
+    {% for comment in comments %}
+        <a href="mailto:{{ comment.email }}"><h5>{{ comment.name }}</h5></a>
+        <p>{{ comment.text }}</p>
+    {% endfor %}
+    </div>
+
+    <a href="{{ back }}">Terug</a>
+
+{% endblock %}
