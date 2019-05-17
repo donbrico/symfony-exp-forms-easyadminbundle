@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Form\CommentFormType;
+use App\Menu\Menu;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use HelloWorld\Services\HelloWorld;
 use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,12 +16,22 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
-    private $articleRepository, $markdown;
+    private $articleRepository, $markdown, $swiftMailer;
+    /**
+     * @var HelloWorld
+     */
+    private $helloWorld;
 
-    public function __construct(ArticleRepository $articleRepository, MarkdownParserInterface $markdown)
-    {
+    public function __construct(
+        ArticleRepository $articleRepository,
+        MarkdownParserInterface $markdown,
+        \Swift_Mailer $swiftMailer,
+        HelloWorld $helloWorld
+    ) {
         $this->articleRepository = $articleRepository;
         $this->markdown = $markdown;
+        $this->swiftMailer = $swiftMailer;
+        $this->helloWorld = $helloWorld;
     }
 
     /**
@@ -28,12 +40,14 @@ class ArticleController extends AbstractController
      */
     public function index(Request $request)
     {
+        var_dump($this->helloWorld->sayHello());
+
         $start = $request->get('start', 0);
         $limit = $request->get('limit', 10);
         $articles = $this->articleRepository->all($start, $limit);
 
         return $this->render('article/index.html.twig', [
-            'articles' => $articles,
+            'articles' => $articles
         ]);
     }
 
@@ -56,6 +70,13 @@ class ArticleController extends AbstractController
                 $data->setArticle($article);
                 $em->persist($data);
                 $em->flush();
+
+                $message = (new \Swift_Message())
+                    ->setTo("douma4@gmail.com")
+                    ->setFrom("douma4@gmail.com")
+                    ->setSubject("New comment")
+                    ->setBody("Hello");
+                $this->swiftMailer->send($message);
 
                 return $this->redirectToRoute('article_detail', [
                     'id'=>$id

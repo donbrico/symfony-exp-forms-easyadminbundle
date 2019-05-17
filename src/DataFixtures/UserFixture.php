@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\ApiToken;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -29,6 +30,12 @@ class UserFixture extends Fixture
                 'ROLE_ADMIN'
             ]);
             $user->setPassword($this->userPasswordEncoder->encodePassword($user, 'password'));
+
+            $apiToken1 = new ApiToken($user);
+            $apiToken2 = new ApiToken($user);
+            $manager->persist($apiToken1);
+            $manager->persist($apiToken2);
+
             $manager->persist($user);
         }
 

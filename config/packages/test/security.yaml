@@ -1,0 +1,5 @@
+# https://symfony.com/doc/2.4/cookbook/testing/http_authentication.html
+security:
+  firewalls:
+    main:
+      http_basic: ~
